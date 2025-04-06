@@ -39,13 +39,14 @@ public class WordSearchService {
     public WordSearchService() {
         root = new TrieNode();
         wordRanks = new HashMap<>();
+    
     }
 
     public void insert(String word) {
         if (word == null || word.length() > MAX_WORD_LENGTH) return;
         String lowerWord = word.toLowerCase();
         for (char c : lowerWord.toCharArray()) {
-            if (c < 'a' || c > 'z') return; // Only lowercase a-z
+            if (c < 'a' || c > 'z') return;
         }
         TrieNode node = root;
         for (char c : lowerWord.toCharArray()) {
@@ -58,6 +59,7 @@ public class WordSearchService {
         if (!node.isEndOfWord) {
             node.isEndOfWord = true;
             wordRanks.put(lowerWord, 0);
+            System.out.println("Inserted word: " + lowerWord); // Debug log
         }
     }
 
@@ -65,15 +67,26 @@ public class WordSearchService {
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(
                         this.getClass().getResourceAsStream("/data/words.txt")))) {
+            if (br == null) {
+                System.out.println("Error: words.txt not found in resources/data/");
+                return;
+            }
             String line;
+            int lineCount = 0;
+            int wordCount = 0;
             while ((line = br.readLine()) != null) {
-                String word = line.trim();
-                if (!word.isEmpty()) {
-                    insert(word);
+                lineCount++;
+                String[] words = line.trim().split("\\s+"); // Split by whitespace
+                for (String word : words) {
+                    if (!word.isEmpty()) {
+                        insert(word);
+                        wordCount++;
+                    }
                 }
             }
+            System.out.println("Loaded " + wordCount + " words from " + lineCount + " lines in words.txt");
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load words: " + e.getMessage());
+            System.out.println("Failed to load words: " + e.getMessage());
         }
     }
 
