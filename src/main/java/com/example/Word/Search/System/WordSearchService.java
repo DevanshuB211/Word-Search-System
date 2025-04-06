@@ -24,6 +24,14 @@ public class WordSearchService {
             this.word = word;
             this.rank = rank;
         }
+
+        public int getRank() {
+            return rank;
+        }
+    
+        public String getWord() {
+            return word;
+        }
     }
 
     public WordSearchService() {
@@ -103,5 +111,38 @@ public class WordSearchService {
                 prefix.setLength(prefix.length() - 1);
             }
         }
+    }
+
+    public boolean search(String word) {
+        if (word == null) return false;
+        TrieNode node = traverseToWord(word);
+        if (node != null && node.isEndOfWord) {
+            String lowerWord = word.toLowerCase();
+            wordRanks.put(lowerWord, wordRanks.getOrDefault(lowerWord, 0) + 1);
+            return true;
+        }
+        return false;
+    }
+
+    public int getRank(String word) {
+        if (word == null) return -1;
+        String lowerWord = word.toLowerCase();
+        TrieNode node = traverseToWord(word);
+        if (node != null && node.isEndOfWord) {
+            return wordRanks.getOrDefault(lowerWord, 0);
+        }
+        return -1;
+    }
+
+    private TrieNode traverseToWord(String word) {
+        TrieNode node = root;
+        for (char c : word.toLowerCase().toCharArray()) {
+            int index = c - 'a';
+            if (node.children[index] == null) {
+                return null;
+            }
+            node = node.children[index];
+        }
+        return node;
     }
 }
