@@ -15,6 +15,8 @@ import java.util.Map;
 public class WordSearchService {
     private TrieNode root;
     private Map<String, Integer> wordRanks;
+    private static final int MAX_WORD_LENGTH = 50;
+    private static final int MAX_PREFIX_LENGTH = 20;
 
     private static class WordRank {
         String word;
@@ -40,8 +42,11 @@ public class WordSearchService {
     }
 
     public void insert(String word) {
-        if (word == null) return;
+        if (word == null || word.length() > MAX_WORD_LENGTH) return;
         String lowerWord = word.toLowerCase();
+        for (char c : lowerWord.toCharArray()) {
+            if (c < 'a' || c > 'z') return; // Only lowercase a-z
+        }
         TrieNode node = root;
         for (char c : lowerWord.toCharArray()) {
             int index = c - 'a';
@@ -73,7 +78,7 @@ public class WordSearchService {
     }
 
     public List<String> autocomplete(String prefix) {
-        if (prefix == null) return Collections.emptyList();
+        if (prefix == null || prefix.length() > MAX_PREFIX_LENGTH) return Collections.emptyList();
         TrieNode node = root;
         String lowerPrefix = prefix.toLowerCase();
         for (char c : lowerPrefix.toCharArray()) {
@@ -114,7 +119,7 @@ public class WordSearchService {
     }
 
     public boolean search(String word) {
-        if (word == null) return false;
+        if (word == null || word.length() > MAX_WORD_LENGTH) return false;
         TrieNode node = traverseToWord(word);
         if (node != null && node.isEndOfWord) {
             String lowerWord = word.toLowerCase();
@@ -125,7 +130,7 @@ public class WordSearchService {
     }
 
     public int getRank(String word) {
-        if (word == null) return -1;
+        if (word == null || word.length() > MAX_WORD_LENGTH) return -1;
         String lowerWord = word.toLowerCase();
         TrieNode node = traverseToWord(word);
         if (node != null && node.isEndOfWord) {

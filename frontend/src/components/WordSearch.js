@@ -4,6 +4,8 @@ import axios from 'axios';
 const WordSearch = () => {
   const [prefix, setPrefix] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [searchWord, setSearchWord] = useState('');
+  const [rank, setRank] = useState(null);
   const [message, setMessage] = useState('');
 
   const apiUrl = 'http://localhost:8080/api';
@@ -36,6 +38,27 @@ const WordSearch = () => {
     }
   };
 
+  const handleSearch = async () => {
+    if (searchWord) {
+      try {
+        const searchResponse = await axios.get(`${apiUrl}/search`, { params: { word: searchWord } });
+        if (searchResponse.data) {
+          const rankResponse = await axios.get(`${apiUrl}/rank`, { params: { word: searchWord } });
+          setRank(rankResponse.data);
+          setMessage(`Searched: ${searchWord}`);
+          console.log('Search successful, rank:', rankResponse.data);
+        } else {
+          setMessage('Word not found');
+          setRank(null);
+        }
+      } catch (error) {
+        setMessage('Error during search');
+        setRank(null);
+        console.error('Search error:', error);
+      }
+    }
+  };
+
   return (
     <div className="row justify-content-center">
       <div className="col-md-6">
@@ -60,7 +83,22 @@ const WordSearch = () => {
             </ul>
           )}
         </div>
+        <div className="mb-3">
+          <label htmlFor="searchInput" className="form-label">Search Word</label>
+          <input
+            id="searchInput"
+            type="text"
+            className="form-control"
+            value={searchWord}
+            onChange={(e) => setSearchWord(e.target.value)}
+            placeholder="Enter word (e.g., 'hello')"
+          />
+          <button className="btn btn-primary mt-2 w-100" onClick={handleSearch}>
+            Search
+          </button>
+        </div>
         {message && <p className="text-info">{message}</p>}
+        {rank !== null && <p className="text-success">Rank: {rank}</p>}
       </div>
     </div>
   );

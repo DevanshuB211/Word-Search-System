@@ -1,4 +1,3 @@
-// src/main/java/com/example/wordsearch/WordSearchController.java
 package com.example.Word.Search.System;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +7,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000") // Already added in Step 6 fix
 public class WordSearchController {
     @Autowired
     private WordSearchService service;
